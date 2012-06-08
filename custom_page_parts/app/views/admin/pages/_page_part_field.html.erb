@@ -1,0 +1,51 @@
+<div class='page_part' id='<%= new_part ? "page_part_new_#{part_index}" : part.to_param %>'>
+  <%= hidden_field_tag "page[parts_attributes][#{part_index}][title]", part.title if new_part %>
+  
+  <%- if Refinery::CustomPageParts.is_custom? part %>
+    <%- if Refinery::CustomPageParts.custom_part_fields(part).count == 0 %>
+      <p>This page part has no fields.</p> 
+      <p>Don't worry, something awesome will probably show up in the page here.</p>
+    <%- end %>
+    <%- Refinery::CustomPageParts.custom_part_fields(part).each do |f| %>
+      <%- type = f[:type] %>
+      <%- title = f[:title] %>
+      <div class="field">
+        <%= label_tag "page[parts_attributes][#{part_index}][#{title}]", title.to_s.gsub(/_/, " ").capitalize %>
+        
+        <%- if type == :string %>
+          <%= text_field_tag "page[parts_attributes][#{part_index}][#{title}]", part.send(title), :class => 'larger widest' %>
+        <%- end %>
+        
+        <%- if type == :html %>
+          <%= text_area_tag "page[parts_attributes][#{part_index}][#{title}]", part.send(title), :rows => 20, :class => 'wymeditor widest' -%>
+        <%- end %>
+
+
+        <%- if type == :text %>
+          <%= text_area_tag "page[parts_attributes][#{part_index}][#{title}]", part.send(title), :rows => 10, :class => 'widest' -%>
+        <%- end %>
+ 
+        <%- if type == :image %>
+          <%= render :partial => "/shared/admin/tags_image_picker", :locals => {
+                :field => "page[parts_attributes][#{part_index}][#{title}]",
+                :image => ::Image.find_by_id(part.send(title)),
+                :toggle_image_display => false
+              } %>
+        <%- end %>
+      </div>
+    <%- end %>
+  <%- else %>
+    <%= text_area_tag "page[parts_attributes][#{part_index}][body]", part.body, :rows => 20, :class => 'wymeditor widest' %>
+  <%- end %>
+  
+  <%= hidden_field_tag "page[parts_attributes][#{part_index}][position]", part_index if new_part %>
+</div>
+
+<script type="text/javascript">
+  // If loaded from partial
+  if(window.$) {
+    setTimeout(function() {
+      $(".edit_page .field").height("");
+    }, 200);
+  }
+</script>

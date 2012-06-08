@@ -1,0 +1,40 @@
+<div id='new_page_part_dialog' style='display: none'>
+  <div class='field'>
+    <label for='new_page_part_title'><%= t('.title') %> (Must be unique)</label>
+    <input id='new_page_part_title' value='' class='larger widest' />
+    <input id='new_page_part_index' type='hidden' value='<%= @page.parts.size %>' />
+  </div>
+  <div class="field">
+    <label for="select_custom">Or choose a custom part</label>
+    <select name="select_custom" id="select_custom_page_part">
+      <%= options_for_select(["Default (text only)"] + Refinery::CustomPageParts.get_custom_page_parts, "Default (text only") %>
+    </select>
+  </div>
+  <%= render :partial => "/shared/admin/form_actions", :locals => {
+    :f => f,
+    :continue_editing => false,
+    :submit_button_id => "new_page_part_save",
+    :cancel_button_id => "new_page_part_cancel",
+    :hide_delete => true
+  } %>
+</div>
+
+<% content_for :javascripts do %>
+  <script type="text/javascript">
+
+    $(function() {
+        $("#add_page_part").click(function() {
+          setTimeout(function() {
+            $("#new_page_part_dialog").height(177);
+          }, 200);
+        });
+
+        $("#select_custom_page_part").change(function() {
+          $("#new_page_part_title").val($(this).val() + "  " +Math.floor(Math.random()*10001));
+        });
+
+        $(".edit_page .field").height("");
+    });
+
+  </script>
+<% end %>
