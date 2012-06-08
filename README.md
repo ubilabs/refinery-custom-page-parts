@@ -22,57 +22,57 @@ you can define string, image or html parameters.
 3. Define what parameters your custom page parts will have. For example,
    our `project` page part definition looks like this:
 
-```ruby
-Refinery::CustomPageParts::define_page_part :identifier => :project do |p|
-  p.field :project_sub_heading, :string
-  p.field :project_photo, :image
-  p.field :project_description, :html
-  p.field :project_info_box, :html
-  p.field :project_thumb, :image
-  p.field :project_app_store_link, :string
-end
-```
+   ```ruby
+      Refinery::CustomPageParts::define_page_part :identifier => :project do |p|
+         p.field :project_sub_heading, :string
+         p.field :project_photo, :image
+         p.field :project_description, :html
+         p.field :project_info_box, :html
+         p.field :project_thumb, :image
+         p.field :project_app_store_link, :string
+      end
+   ```
+   
+   You need to specify an identifier for the page part, and the name and
+   type of each dynamic parameter it has.
 
-You need to specify an identifier for the page part, and the name and
-type of each dynamic parameter it has.
-
-Parameter names need to be unique across *all* page part types. A nice
-way to work around this is to prepend the page part identifier to each
-of them.
+   Parameter names need to be unique across *all* page part types. A nice
+   way to work around this is to prepend the page part identifier to each
+   of them.
 
 4. Make sure adding new page parts is enabled in the refinery settings,
    then add a new page part.
 
-In the dialog that pops up, there is a select box you can use to insert
-one of the custom page parts you defined.
+   In the dialog that pops up, there is a select box you can use to insert
+   one of the custom page parts you defined.
 
 5. Edit the parameters value in the generated form, then save the page
 6. Write a template that will be used to render each page part. You do
    this by adding a partial to the `views/custom_page_parts` folder.
 
-The partial name must be the part identifier you chose. Inside the
-partial, you can access the parameter values with `part.parameter`
+   The partial name must be the part identifier you chose. Inside the
+   partial, you can access the parameter values with `part.parameter`
 
-For example, here is a stripped down version of our project part
-partial:
+   For example, here is a stripped down version of our project part
+   partial:
 
-```haml
-%section
-  %article
-    = image_tag Image.find_by_id(part.project_photo).url unless part.project_photo.blank?
+   ```haml
+     %section
+       %article
+         = image_tag Image.find_by_id(part.project_photo).url unless part.project_photo.blank?
 
-    %header
-      %h2
-        = @page.title
-      %h3
-        = part.project_sub_heading.html_safe
+     %header
+       %h2
+         = @page.title
+       %h3
+         = part.project_sub_heading.html_safe
 
-      = part.project_description.html_safe
-      = part.project_info_box.html_safe
+     = part.project_description.html_safe
+     = part.project_info_box.html_safe
 
-      - unless part.project_app_store_link.blank?
-        %a{:href => part.project_app_store_link}
-```
+     - unless part.project_app_store_link.blank?
+      %a{:href => part.project_app_store_link}
+   ```
 
 ## About
 
