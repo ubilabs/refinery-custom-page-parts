@@ -1,6 +1,6 @@
 <div id='new_page_part_dialog' style='display: none'>
   <div class='field'>
-    <label for='new_page_part_title'><%= t('.title') %> (Must be unique)</label>
+    <label for='new_page_part_title'><%= t('.title')  %></label>
     <input id='new_page_part_title' value='' class='larger widest' />
     <input id='new_page_part_index' type='hidden' value='<%= @page.parts.size %>' />
   </div>
@@ -10,13 +10,11 @@
       <%= options_for_select(["Default (text only)"] + Refinery::CustomPageParts.get_custom_page_parts, "Default (text only") %>
     </select>
   </div>
-  <%= render :partial => "/shared/admin/form_actions", :locals => {
-    :f => f,
-    :continue_editing => false,
-    :submit_button_id => "new_page_part_save",
-    :cancel_button_id => "new_page_part_cancel",
-    :hide_delete => true
-  } %>
+  <%= render '/refinery/admin/form_actions', :f => f,
+             :continue_editing => false,
+             :submit_button_id => "new_page_part_save",
+             :cancel_button_id => "new_page_part_cancel",
+             :hide_delete => true %>
 </div>
 
 <% content_for :javascripts do %>

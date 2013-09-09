@@ -1,5 +1,6 @@
 <div class='page_part' id='<%= new_part ? "page_part_new_#{part_index}" : part.to_param %>'>
   <%= hidden_field_tag "page[parts_attributes][#{part_index}][title]", part.title if new_part %>
+  <%#= text_area_tag "page[parts_attributes][#{part_index}][body]", part.body, :rows => 20, :class => 'wymeditor widest' %>
   
   <%- if Refinery::CustomPageParts.is_custom? part %>
     <%- if Refinery::CustomPageParts.custom_part_fields(part).count == 0 %>
@@ -20,15 +21,14 @@
           <%= text_area_tag "page[parts_attributes][#{part_index}][#{title}]", part.send(title), :rows => 20, :class => 'wymeditor widest' -%>
         <%- end %>
 
-
         <%- if type == :text %>
           <%= text_area_tag "page[parts_attributes][#{part_index}][#{title}]", part.send(title), :rows => 10, :class => 'widest' -%>
         <%- end %>
  
         <%- if type == :image %>
-          <%= render :partial => "/shared/admin/tags_image_picker", :locals => {
-                :field => "page[parts_attributes][#{part_index}][#{title}]",
-                :image => ::Image.find_by_id(part.send(title)),
+          <%= render :partial => "image_picker", :locals => {
+                :f => "page[parts_attributes][#{part_index}][#{title}]",
+                :image => Refinery::Image.find_by_id(part.send(title)),
                 :toggle_image_display => false
               } %>
         <%- end %>
