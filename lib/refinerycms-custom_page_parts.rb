@@ -1,4 +1,3 @@
-require 'refinerycms-base'
 require 'json'
 
 module Refinery
@@ -17,6 +16,12 @@ module Refinery
         # Inject new methods
         PagePart.class_eval do
           
+          def normalise_text_fields
+            if !Refinery::CustomPageParts.is_custom?(self) && body.present? && body !~ %r{^<}
+              self.body = "<p>#{body.gsub("\r\n\r\n", "</p><p>").gsub("\r\n", "<br/>")}</p>"
+            end
+          end
+
           define_method("#{title}") do
             if Refinery::CustomPageParts.is_custom?(self) && Refinery::CustomPageParts.has_field?(self, title)
               Refinery::CustomPageParts.get_field_value(self, title)
@@ -106,6 +111,7 @@ module Refinery
         if part.body[0..0] != '{' && part.body[-1..-1] != '}'
           # Strip out the "<p>" and "</p>" that refinery slaps in
           part.body = part.body[3..-5]
+          part.body = 'foo'
         end
       end
 
@@ -118,21 +124,31 @@ module Refinery
     end
 
     class Engine < Rails::Engine
-      initializer "static assets" do |app|
-        app.middleware.insert_after ::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public"
-      end
-      
-      refinery.after_inclusion do
-        load("#{Rails.root}/config/custom_page_parts_config.rb")
-        puts "Loaded custom page parts"
-      end
-      
-      config.after_initialize do
+      extend Refinery::Engine
+      isolate_namespace Refinery::CustomPageParts
+
+      engine_name :custom_page_parts
+
+      #config.to_prepare do
+        #::Refinery::Page.module_eval do
+        #end
+      #end
+
+      initializer "register refinerycms_custom_page_parts plugin" do
         Refinery::Plugin.register do |plugin|
           plugin.name = "custom_page_parts"
+          plugin.url = proc { Refinery::Core::Engine.routes.url_helpers.custom_page_parts_admin_custom_page_parts_path }
           plugin.pathname = root
+          plugin.activity = {
+            :class_name => :'refinery/custom_page_parts/custom_page_part',
+            :title => 'identifier'
+          }
           plugin.hide_from_menu = true
         end
+      end
+
+      config.after_initialize do
+        Refinery.register_extension(Refinery::CustomPageParts)
       end
     end
   end

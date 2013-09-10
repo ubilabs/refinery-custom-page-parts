@@ -47,8 +47,8 @@
   sections.each do |section|
     section[:html] = yield(section[:yield]) if section[:yield].present?
 
-    if section[:html].blank? and !local_assigns[:show_empty_sections] and
-       !local_assigns[:remove_automatic_sections] and section.keys.include?(:fallback) and
+    if section[:html].blank? && !local_assigns[:show_empty_sections] &&
+       !local_assigns[:remove_automatic_sections] && section.keys.include?(:fallback) &&
        section[:fallback].present?
       section[:html] = raw(section[:fallback])
     end
